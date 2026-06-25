@@ -23,7 +23,10 @@ export async function ensureSeeded(): Promise<void> {
     const count = await col.countDocuments()
     if (count === 0) {
       await col.insertMany(
-        memoryProducts.map((p) => ({ ...p, createdAt: new Date().toISOString() })),
+        memoryProducts.map((p) => {
+          const { _id, ...rest } = p
+          return { ...rest, createdAt: new Date().toISOString() }
+        }),
       )
     }
   } catch (err) {
@@ -83,7 +86,8 @@ export async function createProduct(product: Omit<Product, '_id'>): Promise<Prod
   if (isDbConfigured()) {
     try {
       const db = await getDb()
-      const result = await db.collection(COLLECTION).insertOne(newProduct)
+      const { _id, ...doc } = newProduct
+      const result = await db.collection(COLLECTION).insertOne(doc)
       return { ...newProduct, _id: String(result.insertedId) }
     } catch (err) {
       console.log('[v0] createProduct db error, falling back to memory:', (err as Error).message)
