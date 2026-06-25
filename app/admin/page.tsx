@@ -346,7 +346,7 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-paper">
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-paper">
         <Loader2 className="size-10 animate-spin text-primary" />
         <p className="text-muted-foreground font-medium">Checking administrator credentials...</p>
       </div>
@@ -356,7 +356,7 @@ export default function AdminPage() {
   // Admin login screen
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-paper px-4">
+      <div className="flex min-h-dvh items-center justify-center bg-paper px-4">
         <div className="w-full max-w-md rounded-3xl border border-border bg-card p-6 shadow-md md:p-8">
           <div className="flex flex-col items-center text-center mb-6">
             <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -411,7 +411,7 @@ export default function AdminPage() {
 
   // Admin Dashboard Main Frame
   return (
-    <div className="flex min-h-screen flex-col bg-paper">
+    <div className="flex min-h-dvh flex-col bg-paper">
       {/* Top navbar */}
       <header className="border-b border-border/80 bg-card px-6 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
