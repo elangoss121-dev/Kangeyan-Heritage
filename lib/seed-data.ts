@@ -16,7 +16,13 @@ export const SEED_PRODUCTS: Product[] = [
       'Rich, nutty natural aroma',
     ],
     image: '/products/groundnut-oil.png',
-    gallery: ['/products/groundnut-oil.png', '/brand/ad-groundnut.jpeg'],
+    gallery: [
+      '/products/groundnut-oil.png',
+      '/brand/ad-groundnut.jpeg',
+      '/placeholder/lifestyle-1.jpg',
+      '/placeholder/label-close.jpg',
+      '/placeholder/texture.jpg',
+    ],
     variants: [
       { size: '500 ml', price: 220, mrp: 260, sku: 'KH-GN-500' },
       { size: '1 litre', price: 410, mrp: 480, sku: 'KH-GN-1L' },
@@ -52,7 +58,13 @@ export const SEED_PRODUCTS: Product[] = [
       'Multipurpose: cooking, hair & skin',
     ],
     image: '/products/coconut-oil.png',
-    gallery: ['/products/coconut-oil.png', '/brand/ad-coconut.jpeg'],
+    gallery: [
+      '/products/coconut-oil.png',
+      '/brand/ad-coconut.jpeg',
+      '/placeholder/lifestyle-1.jpg',
+      '/placeholder/label-close.jpg',
+      '/placeholder/texture.jpg',
+    ],
     variants: [
       { size: '500 ml', price: 240, mrp: 280, sku: 'KH-CO-500' },
       { size: '1 litre', price: 450, mrp: 520, sku: 'KH-CO-1L' },
@@ -88,7 +100,13 @@ export const SEED_PRODUCTS: Product[] = [
       'Unrefined and unfiltered',
     ],
     image: '/products/sesame-oil.png',
-    gallery: ['/products/sesame-oil.png', '/brand/ad-sesame.jpeg'],
+    gallery: [
+      '/products/sesame-oil.png',
+      '/brand/ad-sesame.jpeg',
+      '/placeholder/lifestyle-1.jpg',
+      '/placeholder/label-close.jpg',
+      '/placeholder/texture.jpg',
+    ],
     variants: [
       { size: '500 ml', price: 260, mrp: 300, sku: 'KH-SE-500' },
       { size: '1 litre', price: 490, mrp: 560, sku: 'KH-SE-1L' },
@@ -123,7 +141,13 @@ export const SEED_PRODUCTS: Product[] = [
       'Healthy sugar alternative',
     ],
     image: '/products/jaggery-powder.png',
-    gallery: ['/products/jaggery-powder.png', '/brand/ad-jaggery.jpeg'],
+    gallery: [
+      '/products/jaggery-powder.png',
+      '/brand/ad-jaggery.jpeg',
+      '/placeholder/lifestyle-1.jpg',
+      '/placeholder/label-close.jpg',
+      '/placeholder/texture.jpg',
+    ],
     variants: [
       { size: '500 g', price: 90, mrp: 110, sku: 'KH-JG-500' },
       { size: '1 kg', price: 160, mrp: 190, sku: 'KH-JG-1KG' },

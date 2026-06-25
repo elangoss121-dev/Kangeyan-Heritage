@@ -41,7 +41,7 @@ export function SiteHeader() {
       </div>
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4">
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-2 md:hidden">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger
                 render={
@@ -50,13 +50,13 @@ export function SiteHeader() {
               >
                 <Menu className="size-5" />
               </SheetTrigger>
-              <SheetContent side="left" className="w-72">
+              <SheetContent side="top" className="w-full pt-16 pb-8">
                 <SheetHeader>
                   <SheetTitle className="text-left">
                     <Logo />
                   </SheetTitle>
                 </SheetHeader>
-                <nav className="mt-2 flex flex-col px-2">
+                <nav className="mt-4 flex flex-col px-2 gap-1">
                   {NAV.map((item) => (
                     <Link
                       key={item.href}
@@ -82,9 +82,9 @@ export function SiteHeader() {
             </Sheet>
           </div>
 
-          <Logo className="lg:flex-1" />
+          <Logo className="md:flex-1" />
 
-          <nav className="hidden items-center gap-1 lg:flex">
+          <nav className="hidden items-center gap-1 md:flex">
             {NAV.map((item) => (
               <Link
                 key={item.href}
@@ -99,37 +99,27 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-1 lg:flex-1 lg:justify-end">
-            <Button
-              variant="ghost"
-              size="icon"
-              render={<Link href="/shop" />}
-              aria-label="Search"
-            >
-              <Search className="size-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              render={<Link href="/account" />}
+          <div className="flex items-center gap-4 md:flex-1 md:justify-end">
+            <Link
+              href="/account"
+              className="text-foreground transition-opacity hover:opacity-70"
               aria-label="Account"
             >
-              <User className="size-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative"
-              aria-label="Cart"
+              <User className="size-[22px]" />
+            </Link>
+            <button
+              type="button"
+              className="relative text-foreground transition-opacity hover:opacity-70"
               onClick={() => setOpen(true)}
+              aria-label="Cart"
             >
-              <ShoppingBag className="size-5" />
+              <ShoppingBag className="size-[22px]" />
               {count > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid size-5 place-items-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                <span className="absolute -right-1.5 -top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white shadow-xs">
                   {count}
                 </span>
               )}
-            </Button>
+            </button>
           </div>
         </div>
       </header>

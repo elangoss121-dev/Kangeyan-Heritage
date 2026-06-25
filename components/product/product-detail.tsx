@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Minus, Plus, ShoppingBag, Star, Check, Truck, Leaf, ShieldCheck, Heart } from 'lucide-react'
+import { Minus, Plus, ShoppingBag, Star, Check, Truck, Leaf, ShieldCheck, Heart, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/components/cart/cart-provider'
 import { useWishlist } from '@/components/wishlist/wishlist-context'
@@ -10,6 +10,7 @@ import { formatINR } from '@/lib/format'
 import { CATEGORY_LABELS, type Product } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import { useEffect } from 'react'
 
 export function ProductDetail({ product }: { product: Product }) {
   const { addItem, setOpen, subtotal } = useCart()
@@ -17,8 +18,70 @@ export function ProductDetail({ product }: { product: Product }) {
   const [variantIdx, setVariantIdx] = useState(0)
   const [qty, setQty] = useState(1)
   const wishlisted = isWishlisted(product.slug)
+  
+  // Custom gallery & pin checker states
   const gallery = product.gallery?.length ? product.gallery : [product.image]
   const [activeImage, setActiveImage] = useState(gallery[0])
+  const [pincode, setPincode] = useState('')
+  const [deliveryResult, setDeliveryResult] = useState('')
+  const [pincodeError, setPincodeError] = useState(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  // Sync state variables when product slug updates
+  useEffect(() => {
+    setActiveImage(gallery[0])
+    setDeliveryResult('')
+    setPincode('')
+    setMounted(true)
+  }, [product.slug])
+
+  function handleImageSwap(newImage: string) {
+    if (newImage === activeImage) return
+    setIsTransitioning(true)
+    setTimeout(() => {
+      setActiveImage(newImage)
+      setIsTransitioning(false)
+    }, 200)
+  }
+
+  function handlePincodeCheck() {
+    setPincodeError(false)
+    if (!/^\d{6}$/.test(pincode)) {
+      setPincodeError(true)
+      setDeliveryResult('')
+      toast.error('Invalid Pincode', { description: 'Please enter a valid 6-digit pin code.' })
+      return
+    }
+    const isMetro = /^(600|400|560|110)/.test(pincode) || ['600001', '400001', '560001', '110001'].includes(pincode)
+    setDeliveryResult(isMetro ? 'Delivers in 2–3 business days' : 'Delivers in 3–5 business days')
+    toast.success('Pincode Checked!')
+  }
+
+  function handleTouchStart(e: React.TouchEvent) {
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStart === null) return
+    const touchEnd = e.changedTouches[0].clientX
+    const diff = touchStart - touchEnd
+    
+    // Swipe left: next image
+    if (diff > 50) {
+      const nextIdx = (gallery.indexOf(activeImage) + 1) % gallery.length
+      handleImageSwap(gallery[nextIdx])
+    }
+    // Swipe right: previous image
+    if (diff < -50) {
+      const prevIdx = (gallery.indexOf(activeImage) - 1 + gallery.length) % gallery.length
+      handleImageSwap(gallery[prevIdx])
+    }
+    setTouchStart(null)
+  }
+
+  const isBefore2PM = mounted && new Date().getHours() < 14
   const variant = product.variants[variantIdx]
   const hasDiscount = variant.mrp && variant.mrp > variant.price
 
@@ -42,38 +105,72 @@ export function ProductDetail({ product }: { product: Product }) {
     <div className="mx-auto max-w-7xl px-4 py-10">
       <div className="grid gap-10 lg:grid-cols-2">
         {/* Gallery */}
-        <div className="flex flex-col gap-4">
-          <div className="relative aspect-square overflow-hidden rounded-3xl border border-border bg-secondary/40">
-            <Image
-              src={activeImage || '/placeholder.svg'}
-              alt={product.name}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-contain p-6"
-            />
+        <div className="flex flex-col md:flex-row-reverse gap-4 md:items-start">
+          {/* Main Image Container */}
+          <div
+            className="relative flex-1 aspect-square overflow-hidden rounded-3xl border border-border bg-secondary/40 group cursor-zoom-in"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {activeImage.includes('lifestyle-1.jpg') || activeImage.includes('label-close.jpg') || activeImage.includes('texture.jpg') ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-muted/20">
+                <Upload className="size-8 text-muted-foreground animate-pulse mb-2" />
+                <p className="font-serif text-sm font-semibold text-foreground capitalize">
+                  {activeImage.split('/').pop()?.replace('.jpg', '')}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Click thumbnail to swap</p>
+              </div>
+            ) : (
+              <Image
+                src={activeImage || '/placeholder.svg'}
+                alt={product.name}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className={cn(
+                  'object-contain p-6 transition-all duration-200 group-hover:scale-[1.08]',
+                  isTransitioning ? 'opacity-0' : 'opacity-100',
+                )}
+              />
+            )}
           </div>
+
+          {/* Thumbnails strip */}
           {gallery.length > 1 && (
-            <div className="flex gap-3">
-              {gallery.map((g, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setActiveImage(g)}
-                  className={cn(
-                    'relative size-20 overflow-hidden rounded-xl border bg-secondary/40',
-                    activeImage === g ? 'border-primary' : 'border-border',
-                  )}
-                >
-                  <Image
-                    src={g || '/placeholder.svg'}
-                    alt={`${product.name} view ${i + 1}`}
-                    fill
-                    sizes="80px"
-                    className="object-contain p-1.5"
-                  />
-                </button>
-              ))}
+            <div className="flex flex-row md:flex-col gap-3 shrink-0 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0">
+              {gallery.map((g, i) => {
+                const isPlaceholder = g.includes('lifestyle-1.jpg') || g.includes('label-close.jpg') || g.includes('texture.jpg')
+                const label = g.split('/').pop() || 'view'
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleImageSwap(g)}
+                    className={cn(
+                      'relative size-20 overflow-hidden rounded-xl border bg-secondary/40 shrink-0 flex items-center justify-center transition-all',
+                      activeImage === g ? 'border-primary ring-1 ring-primary/20' : 'border-border',
+                      isPlaceholder && 'border-dashed border-muted-foreground/50',
+                    )}
+                  >
+                    {isPlaceholder ? (
+                      <div className="flex flex-col items-center justify-center text-center p-1 space-y-0.5">
+                        <Upload className="size-4 text-muted-foreground" />
+                        <span className="text-[8px] font-medium text-muted-foreground leading-none truncate max-w-[70px] capitalize">
+                          {label.replace('.jpg', '')}
+                        </span>
+                      </div>
+                    ) : (
+                      <Image
+                        src={g || '/placeholder.svg'}
+                        alt={`${product.name} view ${i + 1}`}
+                        fill
+                        sizes="80px"
+                        className="object-contain p-1.5"
+                      />
+                    )}
+                  </button>
+                )
+              })}
             </div>
           )}
         </div>
@@ -136,6 +233,55 @@ export function ProductDetail({ product }: { product: Product }) {
           <p className="mt-1 text-xs text-muted-foreground">
             Inclusive of all taxes
           </p>
+
+          {/* Stock Status & Delivery Pin Checker */}
+          <div className="mt-4 border border-border/60 bg-secondary/20 p-3 rounded-2xl space-y-2 h-[80px] max-h-[80px] overflow-hidden flex flex-col justify-center">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#22c55e]"></span>
+                </span>
+                In stock
+              </div>
+              {deliveryResult ? (
+                <span className="text-[10px] bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-full leading-none animate-pulse">
+                  {deliveryResult}
+                </span>
+              ) : (
+                isBefore2PM && (
+                  <span className="text-[9px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full leading-none">
+                    Order before 2 PM for same-day dispatch
+                  </span>
+                )
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Enter pin code"
+                maxLength={6}
+                inputMode="numeric"
+                value={pincode}
+                onChange={(e) => {
+                  setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))
+                  if (deliveryResult) setDeliveryResult('')
+                  setPincodeError(false)
+                }}
+                className={cn(
+                  'h-8 flex-1 rounded-lg border bg-background px-3 text-xs outline-none focus:border-primary focus:ring-1 focus:ring-primary',
+                  pincodeError ? 'border-destructive' : 'border-border',
+                )}
+              />
+              <button
+                type="button"
+                onClick={handlePincodeCheck}
+                className="h-8 rounded-lg bg-secondary border border-border px-3.5 text-xs font-semibold hover:bg-accent text-foreground transition-colors cursor-pointer shrink-0"
+              >
+                Check
+              </button>
+            </div>
+          </div>
 
           {/* Variants */}
           <div className="mt-6">
