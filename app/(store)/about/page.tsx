@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import Image from 'next/image'
 import { PageHero } from '@/components/layout/page-hero'
-import { Check, ShieldCheck, Heart, Users } from 'lucide-react'
+import { Shield, Sparkles, Eye, ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = {
   title: 'About Us',
@@ -10,97 +13,107 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
+      {/* Hero Section */}
       <PageHero
         eyebrow="Our Story"
-        title="Pure Heritage, Honest Foods"
+        title="Pure Heritage, Tamil Soil"
         description="Preserving the traditional farming and wood pressing legacy of Kangeyam, Tamil Nadu."
       />
 
-      <div className="mx-auto max-w-4xl px-4 py-12 md:py-16 space-y-12">
-        {/* Heritage Section */}
-        <section className="grid gap-6 md:grid-cols-2 items-center">
+      <div className="mx-auto max-w-5xl px-4 py-12 md:py-16 space-y-16">
+        
+        {/* Founder's Story Section */}
+        <section className="grid gap-10 md:grid-cols-2 items-center">
           <div className="space-y-4">
-            <h2 className="font-serif text-2xl font-bold text-foreground">The Kangeyam Legacy</h2>
+            <span className="text-xs font-semibold uppercase tracking-wider text-primary">Founder's Story</span>
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Why We Started Kangeyan Heritage</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Kangeyam, nestled in the heart of Tamil Nadu, is famous across the country for its legendary Kangayam bulls and resilient farming communities. In this arid yet rich soil, sesame, groundnut, and coconuts grow with a unique oil-rich texture.
+              Kangeyan Heritage was born out of a desire to bring pure, unadulterated traditional foods back to modern households. Coming from an agricultural family in the Tirupur district, we witnessed the gradual disappearance of authentic, healthy cooking fats in favor of cheap, refined, solvent-extracted oils.
             </p>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              For generations, our ancestors used large wooden mortars turned by bulls (Marachekku) to extract cooking oil at slow speeds, keeping temperatures low to preserve natural nutrients and aroma. <strong>Kangeyan Heritage</strong> was founded to keep this honest heritage alive.
+              Our family has always believed that food is medicine. By reviving the traditional *Marachekku* (wood-pressing mortar) tradition, we ensure the crops grown in our region—premium sesame, dry copra, and sun-dried groundnuts—are extracted without heat or chemicals, preserving the legacy of our ancestors.
             </p>
           </div>
-          <div className="rounded-3xl border border-border bg-card p-8 flex flex-col justify-center text-center space-y-4 h-full">
-            <h3 className="font-serif text-3xl font-extrabold text-primary">100%</h3>
-            <p className="text-xs font-semibold uppercase tracking-wider text-foreground">Traditional Wood Pressed</p>
-            <Separator />
-            <h3 className="font-serif text-3xl font-extrabold text-primary">Zero</h3>
-            <p className="text-xs font-semibold uppercase tracking-wider text-foreground">Chemicals or Sulphur</p>
+          {/* Founder image slot placeholder */}
+          <div className="relative aspect-[4/5] max-w-sm mx-auto w-full overflow-hidden rounded-3xl border border-border bg-secondary/40 flex items-center justify-center">
+            <div className="text-center p-6 space-y-2">
+              <div className="mx-auto size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <span className="font-serif text-lg font-bold">KH</span>
+              </div>
+              <p className="font-serif text-sm font-semibold text-foreground">Founder Photo Placeholder</p>
+              <p className="text-xs text-muted-foreground">Kangeyan Heritage Agriculture Family</p>
+            </div>
           </div>
         </section>
 
-        {/* Pillars */}
-        <section className="space-y-6">
-          <h2 className="font-serif text-2xl font-bold text-foreground text-center">Our Core Pillars</h2>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <PillarCard
-              icon={<ShieldCheck className="size-5 text-primary" />}
-              title="Uncompromising Purity"
-              description="No mineral oil, no paraffin, no bleaching agents, and no synthetic preservatives. Just pure, unrefined oil as nature intended."
+        {/* Our Values Section */}
+        <section className="space-y-8">
+          <div className="text-center">
+            <span className="text-xs font-semibold uppercase tracking-wider text-primary">Core Principles</span>
+            <h2 className="mt-1 font-serif text-2xl md:text-3xl font-bold text-foreground">Our Core Values</h2>
+          </div>
+          
+          <div className="grid gap-6 sm:grid-cols-3">
+            <ValueCard
+              icon={<Shield className="size-6 text-primary" />}
+              title="Purity"
+              description="No mineral oil, no paraffin, no bleach, and no synthetic preservatives. Just pure, unrefined oils extracted exactly as nature intended."
             />
-            <PillarCard
-              icon={<Heart className="size-5 text-primary" />}
-              title="Traditional Method"
-              description="Extracted in Vaagai (East Indian Walnut) wooden mortars that absorb excess heat, preserving the oil's natural antioxidants."
+            <ValueCard
+              icon={<Sparkles className="size-6 text-primary" />}
+              title="Tradition"
+              description="Crushed in Vaagai (East Indian Walnut) wood mortars at low speed (under 15 RPM). This slow churning absorbs friction heat to keep vital nutrients intact."
             />
-            <PillarCard
-              icon={<Users className="size-5 text-primary" />}
-              title="Supporting Farmers"
-              description="Sourced directly from native farmers in Tirupur, Erode, and Karur districts, ensuring fair price value for crops."
+            <ValueCard
+              icon={<Eye className="size-6 text-primary" />}
+              title="Transparency"
+              description="From sourcing groundnuts and sesame seeds from native farmers to gravity sedimentation under natural sunlight—every step is honest and open."
             />
           </div>
         </section>
 
-        {/* The Promise */}
-        <section className="rounded-3xl border border-border bg-card p-6 md:p-8 space-y-4">
-          <h2 className="font-serif text-xl font-bold text-foreground">Our Promise to You</h2>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            We do not compromise. In a market flooded with chemically extracted solvents, we stand by our wooden mortars. It takes more time, it is more labor-intensive, and the yields are smaller—but the result is oil that preserves the flavor, aroma, and vitality of traditional South Indian cooking.
+        {/* Process Teaser Section */}
+        <section className="rounded-3xl border border-border bg-card p-8 text-center max-w-3xl mx-auto space-y-4">
+          <h2 className="font-serif text-xl md:text-2xl font-bold text-foreground">See How We Extract Our Oils</h2>
+          <p className="text-sm leading-relaxed text-muted-foreground max-w-lg mx-auto">
+            Curious about traditional Vaagai wood mortars or how we use palm jaggery to enrich sesame oil? Read our detailed, step-by-step extraction guide.
           </p>
-          <ul className="grid gap-2 sm:grid-cols-2 text-sm pt-2">
-            <li className="flex items-center gap-2">
-              <Check className="size-4 text-primary shrink-0" />
-              Sourced from sun-dried local copra & seeds
-            </li>
-            <li className="flex items-center gap-2">
-              <Check className="size-4 text-primary shrink-0" />
-              Vaagai wood mortars (chekku)
-            </li>
-            <li className="flex items-center gap-2">
-              <Check className="size-4 text-primary shrink-0" />
-              Naturally sedimented under sunlight
-            </li>
-            <li className="flex items-center gap-2">
-              <Check className="size-4 text-primary shrink-0" />
-              Packaged with strict quality standards
-            </li>
-          </ul>
+          <div className="pt-2">
+            <Link href="/process" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+              Our Extraction Process
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
+        </section>
+
+        {/* CTA Shop section */}
+        <section className="text-center space-y-6 pt-4">
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Bring Heritage to Your Kitchen</h2>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            Experience the rich aroma, nutty flavor, and wholesome benefits of authentic wood-pressed oils.
+          </p>
+          <div>
+            <Button size="lg" className="rounded-full gap-2 px-8" render={<Link href="/shop" />}>
+              Shop Our Oils
+              <ArrowRight className="size-4" />
+            </Button>
+          </div>
         </section>
       </div>
     </>
   )
 }
 
-function PillarCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+function ValueCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
-      <div className="size-9 rounded-full bg-secondary flex items-center justify-center">
+    <div className="rounded-2xl border border-border bg-card p-6 space-y-4 shadow-xs">
+      <div className="size-12 rounded-2xl bg-secondary flex items-center justify-center shrink-0">
         {icon}
       </div>
-      <h3 className="font-semibold text-foreground">{title}</h3>
-      <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
+      <div className="space-y-1.5">
+        <h3 className="font-serif text-base font-bold text-foreground">{title}</h3>
+        <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
+      </div>
     </div>
   )
-}
-
-function Separator() {
-  return <div className="h-px bg-border/80 w-1/3 mx-auto" />
 }

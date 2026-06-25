@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
 export function ProductDetail({ product }: { product: Product }) {
-  const { addItem, setOpen } = useCart()
+  const { addItem, setOpen, subtotal } = useCart()
   const { isWishlisted, toggleWishlist } = useWishlist()
   const [variantIdx, setVariantIdx] = useState(0)
   const [qty, setQty] = useState(1)
@@ -156,6 +156,98 @@ export function ProductDetail({ product }: { product: Product }) {
                   {v.size}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Bundle Suggestion Box */}
+          <div className="mt-6 border border-dashed border-primary/40 bg-muted/20 p-4 rounded-2xl">
+            <h4 className="font-serif text-sm font-semibold text-foreground">Better together</h4>
+            <div className="mt-3 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-secondary border border-border">
+                  <Image
+                    src="/products/groundnut-oil.png"
+                    alt="Cold Pressed Groundnut Oil 500ml"
+                    fill
+                    className="object-cover"
+                    sizes="48px"
+                  />
+                </div>
+                <span className="text-xs font-bold text-muted-foreground">+</span>
+                <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-secondary border border-border">
+                  <Image
+                    src="/products/coconut-oil.png"
+                    alt="Cold Pressed Coconut Oil 500ml"
+                    fill
+                    className="object-cover"
+                    sizes="48px"
+                  />
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground line-through">₹460</p>
+                <p className="font-serif text-sm font-bold text-foreground">
+                  Bundle: <span className="text-primary">₹420</span>
+                </p>
+                <p className="text-[10px] text-emerald-600 font-semibold">Save ₹40</p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-3.5 w-full rounded-full text-xs font-semibold h-8"
+              onClick={() => {
+                addItem({
+                  slug: 'cold-pressed-groundnut-oil',
+                  name: 'Cold Pressed Groundnut Oil',
+                  image: '/products/groundnut-oil.png',
+                  size: '500 ml',
+                  sku: 'KH-GN-500',
+                  price: 200,
+                  quantity: 1,
+                })
+                addItem({
+                  slug: 'cold-pressed-coconut-oil',
+                  name: 'Cold Pressed Coconut Oil',
+                  image: '/products/coconut-oil.png',
+                  size: '500 ml',
+                  sku: 'KH-CO-500',
+                  price: 220,
+                  quantity: 1,
+                })
+                toast.success('Bundle added to cart!', {
+                  description: 'Groundnut Oil 500ml & Coconut Oil 500ml added.',
+                })
+                setOpen(true)
+              }}
+            >
+              Add bundle to cart
+            </Button>
+          </div>
+
+          {/* Free Shipping Progress Bar */}
+          <div className="mt-6 w-full space-y-2">
+            <div className="flex justify-between text-xs font-semibold">
+              <span className={cn(subtotal >= 999 ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground')}>
+                {subtotal === 0
+                  ? 'Add items to unlock free shipping'
+                  : subtotal >= 999
+                  ? "You've unlocked free shipping!"
+                  : `Add ${formatINR(999 - subtotal)} more to get free shipping above ₹999`}
+              </span>
+              <span className="text-muted-foreground font-medium">
+                {subtotal === 0 ? '0%' : subtotal >= 999 ? '100%' : `${Math.round(Math.min(100, (subtotal / 999) * 100))}%`}
+              </span>
+            </div>
+            <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden border border-border/30">
+              <div
+                className={cn(
+                  'h-full transition-all duration-500 rounded-full',
+                  subtotal >= 999 ? 'bg-emerald-500' : 'bg-primary',
+                )}
+                style={{ width: `${subtotal === 0 ? 0 : Math.min(100, (subtotal / 999) * 100)}%` }}
+              />
             </div>
           </div>
 
