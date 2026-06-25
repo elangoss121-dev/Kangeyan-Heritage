@@ -7,6 +7,7 @@ import {
   INSTAGRAM,
   FACEBOOK,
   YOUTUBE,
+  EMAIL,
 } from '@/lib/format'
 
 const shopLinks = [
@@ -128,8 +129,8 @@ export function SiteFooter() {
             </li>
             <li className="flex items-center gap-2">
               <Mail className="size-4 shrink-0 text-primary" />
-              <a href="mailto:hello@kangeyanheritage.com">
-                hello@kangeyanheritage.com
+              <a href={`mailto:${EMAIL}`}>
+                {EMAIL}
               </a>
             </li>
           </ul>
