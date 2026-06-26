@@ -4,8 +4,8 @@ const uri = process.env.MONGODB_URI
 const DB_NAME = process.env.MONGODB_DB || 'kangeyan_heritage'
 
 const clientOptions: MongoClientOptions = {
-  serverSelectionTimeoutMS: 8000,
-  connectTimeoutMS: 8000,
+  serverSelectionTimeoutMS: 10000,
+  connectTimeoutMS: 10000,
   retryWrites: true,
 }
 
@@ -32,7 +32,7 @@ export function isDbConfigured(): boolean {
 }
 
 let dbUnavailableUntil = 0
-const DB_COOLDOWN_MS = 30_000
+const DB_COOLDOWN_MS = 5_000
 
 function markDbUnavailable(): void {
   dbUnavailableUntil = Date.now() + DB_COOLDOWN_MS
@@ -49,13 +49,19 @@ function getClientPromise(): Promise<MongoClient> {
   if (process.env.NODE_ENV === 'development') {
     if (!global._mongoClientPromise) {
       client = new MongoClient(uri, clientOptions)
-      global._mongoClientPromise = client.connect()
+      global._mongoClientPromise = client.connect().catch((err) => {
+        global._mongoClientPromise = undefined
+        throw err
+      })
     }
     return global._mongoClientPromise
   }
   if (!clientPromise) {
     client = new MongoClient(uri, clientOptions)
-    clientPromise = client.connect()
+    clientPromise = client.connect().catch((err) => {
+      clientPromise = null
+      throw err
+    })
   }
   return clientPromise
 }
