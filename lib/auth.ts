@@ -23,7 +23,6 @@ export function resolveJwtSecret(): string {
   return secret ?? FALLBACK;
 }
 
-export const JWT_SECRET = resolveJwtSecret();
 const COOKIE_NAME = 'kh_session'
 
 export interface TokenPayload {
@@ -33,12 +32,12 @@ export interface TokenPayload {
 }
 
 export function signToken(payload: TokenPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
+  return jwt.sign(payload, resolveJwtSecret(), { expiresIn: '7d' })
 }
 
 export function verifyToken(token: string): TokenPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as TokenPayload
+    return jwt.verify(token, resolveJwtSecret()) as TokenPayload
   } catch {
     return null
   }
