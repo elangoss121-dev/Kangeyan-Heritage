@@ -3,7 +3,27 @@ import jwt from 'jsonwebtoken'
 import { getUserById } from './users'
 import type { User } from './types'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'kh_secret_jwt_heritage_key'
+const FALLBACK = "dev-only-insecure-secret";
+
+export function resolveJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (process.env.NODE_ENV === "production") {
+    if (!secret || secret === FALLBACK) {
+      throw new Error(
+        "[auth] JWT_SECRET is missing or set to the dev fallback in production. " +
+        "Set a strong secret in your environment variables."
+      );
+    }
+    if (secret === process.env.NEXTAUTH_SECRET) {
+      throw new Error(
+        "[auth] JWT_SECRET and NEXTAUTH_SECRET must be different values."
+      );
+    }
+  }
+  return secret ?? FALLBACK;
+}
+
+export const JWT_SECRET = resolveJwtSecret();
 const COOKIE_NAME = 'kh_session'
 
 export interface TokenPayload {

@@ -66,10 +66,33 @@ function getClientPromise(): Promise<MongoClient> {
   return clientPromise
 }
 
+let indexesCreated = false
+
+async function ensureIndexes(db: Db) {
+  if (indexesCreated) return
+  indexesCreated = true
+  try {
+    await Promise.all([
+      db.collection('users').createIndex({ email: 1 }, { unique: true }),
+      db.collection('products').createIndex({ slug: 1 }, { unique: true }),
+      db.collection('products').createIndex({ category: 1 }),
+      db.collection('orders').createIndex({ orderNumber: 1 }, { unique: true }),
+      db.collection('orders').createIndex({ email: 1, createdAt: -1 }),
+    ])
+  } catch (err) {
+    console.error('[mongodb] Failed to create database indexes:', err)
+    indexesCreated = false
+  }
+}
+
 export async function getDb(): Promise<Db> {
   try {
     const c = await getClientPromise()
-    return c.db(DB_NAME)
+    const db = c.db(DB_NAME)
+    ensureIndexes(db).catch((err) => {
+      console.error('[mongodb] ensureIndexes background error:', err)
+    })
+    return db
   } catch (err) {
     markDbUnavailable()
     throw err

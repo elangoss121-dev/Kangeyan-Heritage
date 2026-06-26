@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
 import { updateProduct, deleteProduct } from '@/lib/products'
+import { validateCategory } from '@/lib/validation'
 
 async function checkAdmin() {
   const user = await getCurrentUser()
@@ -23,7 +24,12 @@ export async function PUT(
     const updates: Parameters<typeof updateProduct>[1] = {}
     if (typeof body.name === 'string') updates.name = body.name.trim()
     if (typeof body.tamilName === 'string') updates.tamilName = body.tamilName.trim()
-    if (typeof body.category === 'string') updates.category = body.category as any
+    if (typeof body.category === 'string') {
+      if (!validateCategory(body.category)) {
+        return NextResponse.json({ error: 'Invalid category' }, { status: 400 })
+      }
+      updates.category = body.category
+    }
     if (typeof body.shortDescription === 'string') updates.shortDescription = body.shortDescription.trim()
     if (typeof body.description === 'string') updates.description = body.description.trim()
     if (typeof body.image === 'string') updates.image = body.image.trim()

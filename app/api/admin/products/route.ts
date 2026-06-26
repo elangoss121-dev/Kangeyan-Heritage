@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
 import { getAllProducts, createProduct } from '@/lib/products'
+import { validateCategory } from '@/lib/validation'
 
 async function checkAdmin() {
   const user = await getCurrentUser()
@@ -45,6 +46,13 @@ export async function POST(request: Request) {
     if (!name?.trim() || !slug?.trim() || !category || !variants?.length) {
       return NextResponse.json(
         { error: 'Name, Slug, Category, and at least one Variant are required' },
+        { status: 400 },
+      )
+    }
+
+    if (!validateCategory(category)) {
+      return NextResponse.json(
+        { error: 'Invalid category' },
         { status: 400 },
       )
     }

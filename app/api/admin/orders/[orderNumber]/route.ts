@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
 import { updateOrder } from '@/lib/orders'
+import { validateOrderStatus, validatePaymentStatus } from '@/lib/validation'
 
 async function checkAdmin() {
   const user = await getCurrentUser()
@@ -21,8 +22,18 @@ export async function PUT(
     const { status, paymentStatus } = body
 
     const updates: Parameters<typeof updateOrder>[1] = {}
-    if (typeof status === 'string') updates.status = status as any
-    if (typeof paymentStatus === 'string') updates.paymentStatus = paymentStatus as any
+    if (typeof status === 'string') {
+      if (!validateOrderStatus(status)) {
+        return NextResponse.json({ error: 'Invalid order status' }, { status: 400 })
+      }
+      updates.status = status as any
+    }
+    if (typeof paymentStatus === 'string') {
+      if (!validatePaymentStatus(paymentStatus)) {
+        return NextResponse.json({ error: 'Invalid payment status' }, { status: 400 })
+      }
+      updates.paymentStatus = paymentStatus as any
+    }
 
     const updated = await updateOrder(orderNumber, updates)
     if (!updated) {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
 import { updateUser } from '@/lib/users'
+import { validateAddress } from '@/lib/validation'
 
 export async function GET() {
   try {
@@ -30,7 +31,22 @@ export async function PUT(request: Request) {
     const updates: Parameters<typeof updateUser>[1] = {}
     if (typeof name === 'string') updates.name = name.trim()
     if (typeof phone === 'string') updates.phone = phone.trim()
-    if (Array.isArray(addresses)) updates.addresses = addresses
+    
+    if (addresses !== undefined) {
+      if (!Array.isArray(addresses)) {
+        return NextResponse.json({ error: 'Addresses must be an array' }, { status: 400 })
+      }
+      for (let i = 0; i < addresses.length; i++) {
+        const addressCheck = validateAddress(addresses[i])
+        if (!addressCheck.valid) {
+          return NextResponse.json(
+            { error: `Address #${i + 1}: ${addressCheck.error || 'Invalid address format'}` },
+            { status: 400 }
+          )
+        }
+      }
+      updates.addresses = addresses
+    }
 
     const updated = await updateUser(user._id || user.email, updates)
     if (!updated) {
